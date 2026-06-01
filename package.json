@@ -1,0 +1,32 @@
+{
+  "name": "init-visual-planner",
+  "version": "1.0.0",
+  "description": "Initialize documentation ecosystem for Visual System Planner workflow.",
+  "main": "index.js",
+  "bin": {
+    "init-visual-planner": "./index.js"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "index.js",
+    "server.js",
+    "templates/"
+  ],
+  "keywords": [
+    "visual-planner",
+    "ai-agent",
+    "live-reload",
+    "documentation",
+    "wireframe",
+    "architecture-planning"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "open": "^10.1.0",
+    "ws": "^8.16.0"
+  }
+}
