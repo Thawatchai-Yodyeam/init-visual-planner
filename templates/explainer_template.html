@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Concept & System Explainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .ide-sidebar { background-color: #252526; border-right: 1px solid #3c3c3c; }
+        .ide-content { background-color: #1e1e1e; }
+        .tab-active { background-color: #1e1e1e; border-top: 2px solid #007acc; color: #fff; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Header Bar -->
+    <header class="h-11 bg-[#3c3c3c] flex items-center justify-between px-4 text-sm text-gray-300 border-b border-[#2d2d2d]">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-blue-400">💡 CONCEPT EXPLAINER</span>
+            <span class="text-gray-500">/</span>
+            <span id="project-title" class="text-xs">[Deep Architectural Walkthrough]</span>
+        </div>
+        <div class="text-xs text-green-400 flex items-center space-x-1">
+            <span class="h-2 w-2 rounded-full bg-green-500 inline-block"></span>
+            <span>Explanation Spec Active</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 ide-sidebar flex flex-col justify-between text-sm">
+            <div class="p-4 space-y-4">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Concept Chapters</div>
+                <nav class="space-y-1" id="sidebar-menu">
+                    <button onclick="switchTab('core-concept', this)" class="w-full text-left block px-3 py-2 rounded bg-[#37373d] text-white sidebar-btn font-medium">💡 Core Concept</button>
+                    <button onclick="switchTab('visual-architecture', this)" class="w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium">📐 Visual Architecture</button>
+                    <button onclick="switchTab('annotated-code', this)" class="w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium">💻 Annotated Code Examples</button>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-[#3c3c3c] text-xs text-gray-500 space-y-1">
+                <div>Engine: Explainer Planner</div>
+                <div>Status: Concept Synthesized</div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden ide-content">
+            <div class="h-9 bg-[#252526] flex border-b border-[#3c3c3c] text-xs">
+                <button class="px-4 h-full flex items-center space-x-2 tab-active" id="active-tab-title">
+                    <span>core-concept.html</span>
+                </button>
+            </div>
+
+            <!-- Scrollable Content Window -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-8" id="canvas-body">
+                
+                <!-- Section 1: Core Concept -->
+                <div id="core-concept" class="tab-content space-y-6">
+                    <section class="space-y-4">
+                        <h1 class="text-2xl font-bold text-white">💡 Core Concept Breakdown</h1>
+                        <p class="text-gray-400 text-sm max-w-3xl">An easy to follow, step-by-step introduction to the architectural patterns, logic flow, or technical problems being resolved.</p>
+                        
+                        <div class="border border-dashed border-[#3c3c3c] rounded-lg p-12 text-center text-gray-500 text-sm bg-[#1a1a1a]">
+                            [ Fill business goals, logic rules, mathematical formulations, or flow diagrams here ]
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Section 2: Visual Architecture -->
+                <div id="visual-architecture" class="tab-content hidden space-y-6">
+                    <section class="space-y-4">
+                        <h1 class="text-2xl font-bold text-white">📐 Architectural Layout Diagrams</h1>
+                        <p class="text-gray-400 text-sm max-w-3xl">High fidelity SVG drawings showing layout options, data pathways, or component relationships side-by-side.</p>
+                        
+                        <!-- Side by side block demo -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-4">
+                            <div class="bg-[#252526] p-5 rounded-lg border border-[#3c3c3c] space-y-3">
+                                <h3 class="text-white font-semibold text-xs uppercase tracking-wider text-blue-400">[Pattern A: Synchronous Flow]</h3>
+                                <div class="border border-dashed border-[#3c3c3c] rounded p-12 text-center text-gray-500 text-xs bg-[#1a1a1a]">
+                                    [ Renders SVG synchronous diagram here ]
+                                </div>
+                            </div>
+                            <div class="bg-[#252526] p-5 rounded-lg border border-[#3c3c3c] space-y-3">
+                                <h3 class="text-white font-semibold text-xs uppercase tracking-wider text-purple-400">[Pattern B: Asynchronous Queue]</h3>
+                                <div class="border border-dashed border-[#3c3c3c] rounded p-12 text-center text-gray-500 text-xs bg-[#1a1a1a]">
+                                    [ Renders SVG asynchronous diagram here ]
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Section 3: Annotated Code Examples -->
+                <div id="annotated-code" class="tab-content hidden space-y-6">
+                    <section class="space-y-4">
+                        <h1 class="text-2xl font-bold text-white">💻 Annotated Code & Implementations</h1>
+                        <p class="text-gray-400 text-sm max-w-3xl">Annotated code snippets demonstrating implementation details, schemas, or usage syntax.</p>
+                        
+                        <div class="bg-[#252526] p-5 rounded-lg border border-[#3c3c3c] space-y-4">
+                            <h3 class="text-white font-semibold text-xs uppercase tracking-wider border-b border-[#3c3c3c] pb-2">💻 Code Example</h3>
+                            <pre class="text-xs text-gray-400 font-mono bg-[#1e1e1e] p-4 rounded overflow-x-auto leading-relaxed">
+<span class="text-green-400">// [Insert code block here]</span>
+function demonstrateExample() {
+    const data = "concept";
+    console.log(`Explaining ${data}...`);
+}</pre>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Human-in-the-Loop Loopback Utility Bar -->
+    <footer class="h-12 bg-[#007acc] text-white flex items-center justify-between px-4 text-sm font-medium shadow-lg z-50">
+        <div class="flex items-center space-x-2">
+            <span>💡 Have you reviewed the concept explanation?</span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="copyFeedback('APPROVED')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1 rounded text-xs transition font-semibold">
+                👍 Copy "Approved" Prompt
+            </button>
+            <button onclick="copyFeedback('REQUEST_CHANGES')" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-1 rounded text-xs transition font-semibold">
+                📝 Copy "Request Changes" JSON
+            </button>
+        </div>
+    </footer>
+
+    <!-- Interactive JS -->
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.sidebar-btn').forEach(btn => {
+                btn.className = "w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium";
+            });
+            element.className = "w-full text-left block px-3 py-2 rounded bg-[#37373d] text-white sidebar-btn font-medium";
+
+            document.getElementById('active-tab-title').querySelector('span').innerText = tabId + '.html';
+        }
+
+        function copyFeedback(status) {
+            let payload = {};
+            if(status === 'APPROVED') {
+                payload = { status: "APPROVED", message: "Explanation reviewed and approved. Please proceed to the next milestone." };
+            } else {
+                payload = { status: "REQUEST_CHANGES", message: "Please modify the explanation based on the following: [Human: enter changes]" };
+            }
+            
+            const textToCopy = JSON.stringify(payload, null, 2);
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert(`Feedback prompt copied to clipboard! (${status})`);
+            }).catch(err => console.error('Failed to copy: ', err));
+        }
+    </script>
+</body>
+</html>

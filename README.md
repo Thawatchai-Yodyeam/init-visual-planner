@@ -30,6 +30,13 @@ npx init-visual-planner dev <path-to-html-file>
 *   **Port Auto-Collision Handling:** Automatically searches for an open port if port `3000` is already in use.
 *   **Automatic Browser Open:** Opens the file in your default browser instantly.
 
+### 3. Stop the Development Server
+When you are finished reviewing or the design has been approved, shut down the running server process cleanly:
+```bash
+npx init-visual-planner stop
+```
+*   **Safe Shutdown:** Reads the cached PID and terminates only the specific dev server process, preventing port conflicts and keeping other running Node.js apps safe.
+
 ---
 
 ## 🎨 Interactive Visual Canvas Features

@@ -14,17 +14,23 @@ async function init() {
 
   // Paths in target directory
   const vpDir = path.join(targetDir, '.visual-planner');
-  const templateDest = path.join(vpDir, 'template.html');
   const agentsDest = path.join(targetDir, 'agents.md');
   const contextDest = path.join(targetDir, 'context.md');
   const tasksDest = path.join(targetDir, 'tasks.md');
 
   // Paths to template files in this package
   const templatesSrcDir = path.join(__dirname, 'templates');
-  const templateSrc = path.join(templatesSrcDir, 'template.html');
   const agentsSrc = path.join(templatesSrcDir, 'agents.md');
   const contextSrc = path.join(templatesSrcDir, 'context.md');
   const tasksSrc = path.join(templatesSrcDir, 'tasks.md');
+
+  const htmlTemplates = [
+    'spec_template.html',
+    'meeting_template.html',
+    'comparison_template.html',
+    'priority_template.html',
+    'explainer_template.html'
+  ];
 
   try {
     // Ensure target folder .visual-planner exists
@@ -41,7 +47,15 @@ async function init() {
       }
     }
 
-    await copyFile(templateSrc, templateDest, '.visual-planner/template.html');
+    // Copy all 5 HTML templates
+    for (const tempFile of htmlTemplates) {
+      await copyFile(
+        path.join(templatesSrcDir, tempFile),
+        path.join(vpDir, tempFile),
+        `.visual-planner/${tempFile}`
+      );
+    }
+
     await copyFile(agentsSrc, agentsDest, 'agents.md');
     await copyFile(contextSrc, contextDest, 'context.md');
     await copyFile(tasksSrc, tasksDest, 'tasks.md');

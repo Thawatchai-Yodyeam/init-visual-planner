@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Option & Concept Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .ide-sidebar { background-color: #252526; border-right: 1px solid #3c3c3c; }
+        .ide-content { background-color: #1e1e1e; }
+        .tab-active { background-color: #1e1e1e; border-top: 2px solid #007acc; color: #fff; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Header Bar -->
+    <header class="h-11 bg-[#3c3c3c] flex items-center justify-between px-4 text-sm text-gray-300 border-b border-[#2d2d2d]">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-blue-400">📊 IDEA COMPARISON</span>
+            <span class="text-gray-500">/</span>
+            <span id="project-title" class="text-xs">[Compare Design Decisions]</span>
+        </div>
+        <div class="text-xs text-green-400 flex items-center space-x-1">
+            <span class="h-2 w-2 rounded-full bg-green-500 inline-block"></span>
+            <span>A/B/C/D Alternatives Loaded</span>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 ide-sidebar flex flex-col justify-between text-sm">
+            <div class="p-4 space-y-4">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Comparison Views</div>
+                <nav class="space-y-1" id="sidebar-menu">
+                    <button onclick="switchTab('comparison-grid', this)" class="w-full text-left block px-3 py-2 rounded bg-[#37373d] text-white sidebar-btn font-medium">📊 Side-by-Side Matrix</button>
+                    <button onclick="switchTab('tradeoffs-detail', this)" class="w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium">⚖️ Trade-off Analysis</button>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-[#3c3c3c] text-xs text-gray-500 space-y-1">
+                <div>Engine: Matrix Planner</div>
+                <div>Status: Awaiting Option Choice</div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden ide-content">
+            <div class="h-9 bg-[#252526] flex border-b border-[#3c3c3c] text-xs">
+                <button class="px-4 h-full flex items-center space-x-2 tab-active" id="active-tab-title">
+                    <span>comparison-grid.html</span>
+                </button>
+            </div>
+
+            <!-- Scrollable Content Window -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-8" id="canvas-body">
+                
+                <!-- Section 1: Side-by-Side Grid (Max 4 Columns) -->
+                <div id="comparison-grid" class="tab-content space-y-6">
+                    <section class="space-y-4">
+                        <h1 class="text-2xl font-bold text-white">📊 Side-by-Side Concept Matrix</h1>
+                        <p class="text-gray-400 text-sm max-w-3xl">Review design choices below. Click the corresponding button to choose an option and copy the feedback prompt to the clipboard.</p>
+                        
+                        <!-- Grid Matrix (Supports up to 4 columns) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 my-6">
+                            
+                            <!-- Option A -->
+                            <div class="border border-[#3c3c3c] bg-[#252526] p-5 rounded-lg flex flex-col justify-between hover:border-blue-500 transition">
+                                <div class="space-y-3">
+                                    <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Option A</span>
+                                    <h3 class="text-white font-semibold text-sm mt-1">[Option A Name]</h3>
+                                    <p class="text-gray-400 text-xs leading-relaxed">[Brief description of Option A and its core approach.]</p>
+                                    
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-green-400 uppercase">✔️ Pros:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Pros item 1]</li>
+                                            <li>[Pros item 2]</li>
+                                        </ul>
+                                    </div>
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-red-400 uppercase">❌ Cons:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Cons item 1]</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button onclick="selectOption('Option A')" class="mt-6 bg-[#3a3a3c] hover:bg-blue-600 text-white text-xs py-2 rounded font-medium transition">
+                                    🎯 Select Option A
+                                </button>
+                            </div>
+
+                            <!-- Option B -->
+                            <div class="border border-[#3c3c3c] bg-[#252526] p-5 rounded-lg flex flex-col justify-between hover:border-purple-500 transition">
+                                <div class="space-y-3">
+                                    <span class="bg-purple-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Option B</span>
+                                    <h3 class="text-white font-semibold text-sm mt-1">[Option B Name]</h3>
+                                    <p class="text-gray-400 text-xs leading-relaxed">[Brief description of Option B and its core approach.]</p>
+                                    
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-green-400 uppercase">✔️ Pros:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Pros item 1]</li>
+                                        </ul>
+                                    </div>
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-red-400 uppercase">❌ Cons:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Cons item 1]</li>
+                                            <li>[Cons item 2]</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button onclick="selectOption('Option B')" class="mt-6 bg-[#3a3a3c] hover:bg-purple-600 text-white text-xs py-2 rounded font-medium transition">
+                                    🎯 Select Option B
+                                </button>
+                            </div>
+
+                            <!-- Option C -->
+                            <div class="border border-[#3c3c3c] bg-[#252526] p-5 rounded-lg flex flex-col justify-between hover:border-pink-500 transition">
+                                <div class="space-y-3">
+                                    <span class="bg-pink-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Option C</span>
+                                    <h3 class="text-white font-semibold text-sm mt-1">[Option C Name]</h3>
+                                    <p class="text-gray-400 text-xs leading-relaxed">[Brief description of Option C and its core approach.]</p>
+                                    
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-green-400 uppercase">✔️ Pros:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Pros item 1]</li>
+                                        </ul>
+                                    </div>
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-red-400 uppercase">❌ Cons:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Cons item 1]</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button onclick="selectOption('Option C')" class="mt-6 bg-[#3a3a3c] hover:bg-pink-600 text-white text-xs py-2 rounded font-medium transition">
+                                    🎯 Select Option C
+                                </button>
+                            </div>
+
+                            <!-- Option D -->
+                            <div class="border border-[#3c3c3c] bg-[#252526] p-5 rounded-lg flex flex-col justify-between hover:border-amber-500 transition">
+                                <div class="space-y-3">
+                                    <span class="bg-amber-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Option D</span>
+                                    <h3 class="text-white font-semibold text-sm mt-1">[Option D Name]</h3>
+                                    <p class="text-gray-400 text-xs leading-relaxed">[Brief description of Option D and its core approach.]</p>
+                                    
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-green-400 uppercase">✔️ Pros:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Pros item 1]</li>
+                                        </ul>
+                                    </div>
+                                    <div class="space-y-1 pt-2 border-t border-[#3c3c3c]">
+                                        <div class="text-[10px] font-bold text-red-400 uppercase">❌ Cons:</div>
+                                        <ul class="list-disc list-inside text-[11px] text-gray-300 space-y-1 pl-1">
+                                            <li>[Cons item 1]</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button onclick="selectOption('Option D')" class="mt-6 bg-[#3a3a3c] hover:bg-amber-600 text-white text-xs py-2 rounded font-medium transition">
+                                    🎯 Select Option D
+                                </button>
+                            </div>
+
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Section 2: Trade-off Analysis -->
+                <div id="tradeoffs-detail" class="tab-content hidden space-y-6">
+                    <section class="space-y-4">
+                        <h1 class="text-2xl font-bold text-white">⚖️ Trade-off & Cost Analysis</h1>
+                        <p class="text-gray-400 text-sm max-w-3xl">Deep dive analysis of key trade-offs between implementation speed, maintainability, and resource utilization.</p>
+                        
+                        <div class="border border-dashed border-[#3c3c3c] rounded-lg p-12 text-center text-gray-500 text-sm bg-[#1a1a1a]">
+                            [ Fill comparison matrices, latency charts, or architectural impact reports here ]
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Human-in-the-Loop Loopback Utility Bar -->
+    <footer class="h-12 bg-[#007acc] text-white flex items-center justify-between px-4 text-sm font-medium shadow-lg z-50">
+        <div class="flex items-center space-x-2">
+            <span>💡 Select an option above or request changes.</span>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="copyFeedback('APPROVED')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1 rounded text-xs transition font-semibold">
+                👍 Copy "Approved" Prompt
+            </button>
+            <button onclick="copyFeedback('REQUEST_CHANGES')" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-1 rounded text-xs transition font-semibold">
+                📝 Copy "Request Changes" JSON
+            </button>
+        </div>
+    </footer>
+
+    <!-- Interactive JS -->
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.sidebar-btn').forEach(btn => {
+                btn.className = "w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium";
+            });
+            element.className = "w-full text-left block px-3 py-2 rounded bg-[#37373d] text-white sidebar-btn font-medium";
+
+            document.getElementById('active-tab-title').querySelector('span').innerText = tabId + '.html';
+        }
+
+        function selectOption(optionName) {
+            const feedbackPayload = {
+                action: "SELECT_SPEC_LAYOUT",
+                selected_option: optionName,
+                status: "APPROVED_WITH_DIRECTION",
+                message: `I reviewed the options and decided to go with "${optionName}". Please use this for the implementation!`
+            };
+            
+            navigator.clipboard.writeText(JSON.stringify(feedbackPayload, null, 2)).then(() => {
+                alert(`🎉 Selection [ ${optionName} ] copied! Paste it in the chat.`);
+            }).catch(err => console.error('Failed to copy:', err));
+        }
+
+        function copyFeedback(status) {
+            let payload = {};
+            if(status === 'APPROVED') {
+                payload = { status: "APPROVED", message: "Option comparison reviewed and approved. Please proceed to write the code based on the chosen path." };
+            } else {
+                payload = { status: "REQUEST_CHANGES", message: "Please modify the options based on the following: [Human: enter changes]" };
+            }
+            
+            const textToCopy = JSON.stringify(payload, null, 2);
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert(`Feedback prompt copied to clipboard! (${status})`);
+            }).catch(err => console.error('Failed to copy: ', err));
+        }
+    </script>
+</body>
+</html>
