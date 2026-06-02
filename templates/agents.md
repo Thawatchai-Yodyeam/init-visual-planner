@@ -24,8 +24,10 @@ Do not write HTML layouts from scratch. Instead, choose the most appropriate lay
 - **[🚀 START DEV SERVER]** If no server is running, execute in the background:
   `npx init-visual-planner dev <path-to-html-file>`
 - **[🛑 GRACEFUL SHUTDOWN]** Immediately terminate the running dev server background process when the user pastes an approval feedback JSON (e.g., containing `"status": "APPROVED"` or `"status": "APPROVED_WITH_DIRECTION"`), or when transitioning to implementation.
-  - **On Windows:** Terminate the process using:
-    `npx init-visual-planner stop` (or `taskkill /F /IM node.exe` if the local CLI is missing).
+  - **How to Shutdown:** 
+    1. **Primary (For AI):** Use your native task manager/process termination tool (such as `manage_task` with action `kill` or similar process tools) to directly terminate the background task running the dev server.
+    2. **Fallback:** Run `npx init-visual-planner stop` in the workspace root.
+    3. **[🛑 STRICTLY FORBIDDEN]** NEVER use broad commands like `taskkill /F /IM node.exe` as this will abruptly crash your own execution environment and all other Node.js applications.
 
 ## 🎨 Execution Standards for HTML Canvas
 1. **SVG Diagrams:** Always illustrate workflows, schemas, and data pipelines using clean, raw SVG code embedded directly in the HTML. Do not write text flowcharts.
