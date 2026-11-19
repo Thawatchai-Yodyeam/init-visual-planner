@@ -20,14 +20,15 @@ Do not write HTML layouts from scratch. Instead, choose the most appropriate lay
 5. **💡 `explainer_template.html`:** Use for walkthroughs of complex architectural topics, featuring side-by-side SVG layouts and annotated code samples.
 
 ## ⚙️ Dev Server Lifecycle Management
-- **[🔍 PORT COLLISION PREVENTION]** Before spawning a new dev server, verify if the port (e.g. 3000) is already active. If active, do not spawn a new process. Simply update the HTML file—the server will automatically trigger a browser Live Reload.
-- **[🚀 START DEV SERVER]** If no server is running, execute in the background:
+- **[🔍 CHECK BEFORE STARTING]** Run `npx init-visual-planner status` from the workspace root. If a server is already running, do not spawn another one: just update the HTML file and the browser live-reloads. (`dev` is also idempotent: if a server is already running for this project it prints the URL and exits.)
+- **[🚀 START DEV SERVER]** If no server is running, execute in the background from the workspace root:
   `npx init-visual-planner dev <path-to-html-file>`
-- **[🛑 GRACEFUL SHUTDOWN]** Immediately terminate the running dev server background process when the user pastes an approval feedback JSON (e.g., containing `"status": "APPROVED"` or `"status": "APPROVED_WITH_DIRECTION"`), or when transitioning to implementation.
-  - **How to Shutdown:** 
+  Add `--no-open` in headless environments where no browser is available.
+- **[🛑 GRACEFUL SHUTDOWN]** Immediately terminate the running dev server when the user pastes an approval feedback JSON (e.g., containing `"status": "APPROVED"` or `"status": "APPROVED_WITH_DIRECTION"`), or when transitioning to implementation.
+  - **How to Shutdown:**
     1. **Primary (For AI):** Use your native task manager/process termination tool (such as `manage_task` with action `kill` or similar process tools) to directly terminate the background task running the dev server.
-    2. **Fallback:** Run `npx init-visual-planner stop` in the workspace root.
-    3. **[🛑 STRICTLY FORBIDDEN]** NEVER use broad commands like `taskkill /F /IM node.exe` as this will abruptly crash your own execution environment and all other Node.js applications.
+    2. **Fallback:** Run `npx init-visual-planner stop` in the workspace root. It signals only the recorded dev server PID.
+    3. **[🛑 STRICTLY FORBIDDEN]** NEVER use broad commands like `taskkill /F /IM node.exe` or `pkill node` as this will abruptly crash your own execution environment and all other Node.js applications.
 
 ## 🎨 Execution Standards for HTML Canvas
 1. **SVG Diagrams:** Always illustrate workflows, schemas, and data pipelines using clean, raw SVG code embedded directly in the HTML. Do not write text flowcharts.
