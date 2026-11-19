@@ -31,6 +31,18 @@ Do not write HTML layouts from scratch. Instead, choose the most appropriate lay
     3. **[🛑 STRICTLY FORBIDDEN]** NEVER use broad commands like `taskkill /F /IM node.exe` or `pkill node` as this will abruptly crash your own execution environment and all other Node.js applications.
 
 ## 🎨 Execution Standards for HTML Canvas
-1. **SVG Diagrams:** Always illustrate workflows, schemas, and data pipelines using clean, raw SVG code embedded directly in the HTML. Do not write text flowcharts.
-2. **Dynamic Tabbed Layout:** Populate only relevant tabs. Hide non-applicable tabs from the sidebar navigation using the CSS `hidden` class, or replace the content with: `[Not Applicable for this Specification]`.
-3. **Loopback scripts:** Never delete the loopback utility scripts at the bottom of the templates. They are crucial for letting users copy feedback JSON back to the chat.
+1. **Read the guide comment first:** Each template starts with a short `VISUAL PLANNER TEMPLATE` comment explaining how to fill it. Replace every `[bracketed placeholder]`, and update both `<title>` and the `[data-vp-title]` element.
+2. **Tabs come from sections:** The sidebar is generated from `<section data-vp-tab="id" data-vp-label="🗺️ Label">`. Populate only relevant tabs: **delete** a section to drop its tab, add a section to create one. Never write sidebar buttons by hand.
+3. **SVG Diagrams:** Always illustrate workflows, schemas, and data pipelines as inline `<svg class="vp-svg">` using the provided classes (`node`, `node-accent`, `node-ok`, `node-warn`, `edge`, `edge-dashed`, `label`, `title`). Give every `<marker>` a unique id. Do not write text flowcharts.
+4. **Interactive parts are attribute-driven:** Keep the `data-vp-*` attributes on option cards (`data-vp-option` + `data-vp-select`), checklists (`data-vp-checklist` / `data-vp-item`), and boards (`data-vp-board` / `data-vp-column` / `data-vp-card`). Duplicate an existing element to add more; no JavaScript is needed.
+5. **Runtime blocks:** Never edit or delete the two `vp-runtime` blocks (in `<head>` and before `</body>`). They power tabs and the copy-to-chat buttons, and they keep working offline.
+
+## 📨 Reading Feedback JSON
+Every payload the user pastes back includes `status`, `document` (page title) and `file` (HTML file name), so you know which canvas it refers to.
+
+| `status` | Extra fields | What to do |
+| --- | --- | --- |
+| `APPROVED` | `message` | Proceed with the plan as shown. Stop the dev server. |
+| `APPROVED_WITH_DIRECTION` | `action: "SELECT_OPTION"`, `selected_option`, optional `direction` | Implement the chosen option, honouring `direction`. Stop the dev server. |
+| `REQUEST_CHANGES` | `changes`, `viewing_section` | Apply `changes` to the **same** HTML file; the browser live-reloads. |
+| `UPDATED` | `action: "UPDATE_MEETING_ACTIONS"` + `items[]`, or `action: "UPDATE_TASK_PRIORITY"` + `priorities{}` | Sync `tasks.md` to the new statuses/order (arrays are ordered top = first). |

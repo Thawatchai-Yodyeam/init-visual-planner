@@ -17,7 +17,8 @@
     "templates/"
   ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "sync:templates": "node scripts/sync-templates.js"
   },
   "engines": {
     "node": ">=18.3.0"

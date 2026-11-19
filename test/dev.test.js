@@ -17,7 +17,7 @@ before(async () => {
   await fs.writeFile(path.join(root, 'site', 'spec.html'), '<html><body><h1>Spec</h1></body></html>');
   await fs.writeFile(path.join(root, 'site', 'style.css'), 'body{}');
   await fs.writeFile(path.join(root, 'site-secrets', 'secret.txt'), 'top secret');
-  server = await startDevServer(path.join(root, 'site', 'spec.html'), { port: 0, watch: false });
+  server = await startDevServer(path.join(root, 'site', 'spec.html'), { port: 0, watch: false, log: () => {} });
 });
 
 after(async () => {
@@ -79,7 +79,7 @@ test('rejects malformed URLs without crashing', async () => {
 });
 
 test('falls through to the next free port when the preferred one is busy', async () => {
-  const second = await startDevServer(path.join(root, 'site', 'spec.html'), { port: server.port, watch: false });
+  const second = await startDevServer(path.join(root, 'site', 'spec.html'), { port: server.port, watch: false, log: () => {} });
   try {
     assert.notEqual(second.port, server.port);
   } finally {

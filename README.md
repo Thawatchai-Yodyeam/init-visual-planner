@@ -52,9 +52,12 @@ The server records its PID and URL in `.visual-planner/server.json` (in the fold
 ---
 
 ## 🎨 Interactive Visual Canvas Features
-* **Sidebar Navigation:** Switch between tabs like *System Overview*, *UI/UX Wireframes*, *Workflows*, and *API Specs*.
-* **Interactive Decision Trade-offs:** Click buttons in comparison sections to copy choice JSON prompts to the clipboard.
-* **Human-in-the-Loop Feedback:** Bottom bar buttons copy `APPROVED` or `REQUEST_CHANGES` feedback payloads instantly.
+* **Self-contained pages:** Each template is a single HTML file. The app shell, tabs and feedback buttons are plain CSS/JS, so they keep working offline. Tailwind (from its CDN) is only used to style the content.
+* **Auto-generated navigation:** Each `<section data-vp-tab>` becomes a sidebar tab. The active tab is kept in the URL hash, and both tab and scroll position survive live reloads.
+* **Human-in-the-Loop Feedback:** *Approve* copies an `APPROVED` payload. *Request changes* opens a text box, so your actual change request ends up in the JSON. Every payload names the document and file it came from.
+* **Decision cards:** Choosing an option copies an `APPROVED_WITH_DIRECTION` payload, with optional direction you can type in.
+* **Checklists & priority boards:** Meeting action items track progress, and the priority board supports drag-and-drop plus keyboard (↑ ↓ ← →). Both copy structured JSON for syncing `tasks.md`.
+* **Works anywhere:** The sidebar collapses to a tab strip on phones, and *Print / Save as PDF* outputs every section. If the clipboard is blocked (e.g. plain `http://` on a LAN IP), the JSON is shown for manual copy.
 
 ---
 
@@ -68,10 +71,14 @@ src/lib/                Shared helpers (paths, server state file)
 src/index.js            Programmatic API
 templates/canvas/       HTML canvases → copied to .visual-planner/
 templates/docs/         Markdown docs → copied to the project root
+scripts/runtime/        Shared canvas CSS/JS, inlined into every template
+scripts/sync-templates.js  Re-inlines the runtime (`npm run sync:templates`)
 test/                   node:test suites (`npm test`)
 ```
 
 New templates dropped into `templates/canvas/` or `templates/docs/` are picked up by `init` automatically.
+
+To change canvas behaviour or styling, edit `scripts/runtime/runtime.{css,js}` and run `npm run sync:templates`. A test fails if any template is out of sync. The browser tests (`test/templates.browser.test.js`) run when Playwright is installed and are skipped otherwise.
 
 ## 🛠️ Development
 ```bash

@@ -1,162 +1,735 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Concept & System Explainer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .ide-sidebar { background-color: #252526; border-right: 1px solid #3c3c3c; }
-        .ide-content { background-color: #1e1e1e; }
-        .tab-active { background-color: #1e1e1e; border-top: 2px solid #007acc; color: #fff; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[Concept] · Explainer</title>
+<!-- vp-runtime:head:start · generated from scripts/runtime by `npm run sync:templates`. Keep this block; do not edit it by hand. -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  if (window.tailwind) tailwind.config = { theme: { extend: { colors: { ide: {
+    bg: '#1e1e1e', panel: '#252526', raised: '#2d2d2d', hover: '#37373d',
+    border: '#3c3c3c', inset: '#1a1a1a', accent: '#007acc'
+  } } } } };
+</script>
+<style>
+/* Visual Planner runtime styles: app shell + interactive components.
+   Plain CSS so the page stays usable even when the Tailwind CDN is offline. */
+:root {
+  --vp-bg: #1e1e1e;
+  --vp-panel: #252526;
+  --vp-raised: #2d2d2d;
+  --vp-hover: #37373d;
+  --vp-border: #3c3c3c;
+  --vp-inset: #1a1a1a;
+  --vp-text: #d4d4d4;
+  --vp-strong: #ffffff;
+  --vp-muted: #9ca3af;
+  --vp-dim: #6b7280;
+  --vp-accent: #007acc;
+  --vp-ok: #059669;
+  --vp-warn: #d97706;
+  --vp-font: 'Segoe UI', system-ui, -apple-system, Tahoma, Geneva, Verdana, sans-serif;
+  --vp-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; margin: 0; }
+body { background: var(--vp-bg); color: var(--vp-text); font-family: var(--vp-font); }
+
+/* ---------- App shell ---------- */
+.vp-app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+.vp-header { flex: none; height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: #3c3c3c; border-bottom: 1px solid var(--vp-raised); font-size: 14px; color: #d1d5db; }
+.vp-header-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.vp-brand { font-weight: 700; color: #60a5fa; white-space: nowrap; }
+.vp-crumb { color: var(--vp-dim); }
+.vp-title { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vp-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #4ade80; white-space: nowrap; }
+.vp-status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+.vp-body { flex: 1; display: flex; min-height: 0; }
+.vp-sidebar { width: 256px; flex: none; display: flex; flex-direction: column; justify-content: space-between; background: var(--vp-panel); border-right: 1px solid var(--vp-border); font-size: 14px; overflow-y: auto; }
+.vp-sidebar-label { padding: 16px 16px 8px; font-size: 12px; font-weight: 600; color: var(--vp-dim); text-transform: uppercase; letter-spacing: .05em; }
+.vp-nav { display: flex; flex-direction: column; gap: 4px; padding: 0 16px 16px; }
+.vp-nav-btn { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 8px 12px; border-radius: 4px; color: var(--vp-muted); font-weight: 500; cursor: pointer; }
+.vp-nav-btn:hover { background: var(--vp-raised); color: #e5e7eb; }
+.vp-nav-btn[aria-current="page"] { background: var(--vp-hover); color: var(--vp-strong); }
+.vp-nav-btn:focus-visible { outline: 2px solid var(--vp-accent); outline-offset: -2px; }
+.vp-meta { padding: 16px; border-top: 1px solid var(--vp-border); font-size: 12px; color: var(--vp-dim); line-height: 1.7; }
+
+.vp-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.vp-tabbar { flex: none; height: 36px; display: flex; background: var(--vp-panel); border-bottom: 1px solid var(--vp-border); font-size: 12px; }
+.vp-tab { display: flex; align-items: center; padding: 0 16px; background: var(--vp-bg); border-top: 2px solid var(--vp-accent); color: var(--vp-strong); }
+.vp-canvas { flex: 1; overflow-y: auto; padding: 24px; }
+[data-vp-tab][hidden] { display: none !important; }
+
+.vp-footer { flex: none; min-height: 48px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 6px 16px; background: var(--vp-accent); color: #fff; font-size: 14px; font-weight: 500; }
+.vp-footer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Only one section: the sidebar would be a single button, so drop it. */
+.vp-app[data-vp-single] .vp-sidebar { display: none; }
+
+/* ---------- Buttons ---------- */
+.vp-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; color: #fff; background: #3a3a3c; cursor: pointer; transition: background .15s; text-align: center; }
+.vp-btn:hover { background: #4a4a4c; }
+.vp-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.vp-btn-ok { background: var(--vp-ok); } .vp-btn-ok:hover { background: #10b981; }
+.vp-btn-warn { background: var(--vp-warn); } .vp-btn-warn:hover { background: #f59e0b; }
+.vp-btn-primary { background: #2563eb; } .vp-btn-primary:hover { background: #3b82f6; }
+.vp-btn-ghost { background: transparent; box-shadow: inset 0 0 0 1px var(--vp-border); color: var(--vp-text); }
+.vp-btn-ghost:hover { background: var(--vp-raised); }
+.vp-btn-block { display: flex; width: 100%; padding: 8px 14px; }
+
+/* ---------- Content primitives ---------- */
+.vp-placeholder { border: 1px dashed var(--vp-border); border-radius: 8px; padding: 40px 24px; text-align: center; color: var(--vp-dim); font-size: 14px; background: var(--vp-inset); }
+.vp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vp-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--vp-dim); padding: 8px 12px; border-bottom: 1px solid var(--vp-border); }
+.vp-table td { padding: 10px 12px; border-bottom: 1px solid var(--vp-raised); vertical-align: top; }
+.vp-table code, .vp-code { font-family: var(--vp-mono); }
+.vp-scroll-x { overflow-x: auto; }
+
+/* SVG diagrams: add class="vp-svg" to the <svg> and use these classes on shapes. */
+.vp-svg { width: 100%; height: auto; display: block; font-family: var(--vp-font); }
+.vp-svg text { fill: var(--vp-text); font-size: 13px; }
+.vp-svg .node { fill: var(--vp-panel); stroke: var(--vp-border); stroke-width: 1.5; }
+.vp-svg .node-accent { fill: #0b2a40; stroke: var(--vp-accent); stroke-width: 1.5; }
+.vp-svg .node-ok { fill: #0b2e22; stroke: var(--vp-ok); stroke-width: 1.5; }
+.vp-svg .node-warn { fill: #33240a; stroke: var(--vp-warn); stroke-width: 1.5; }
+.vp-svg .edge { stroke: var(--vp-dim); stroke-width: 1.5; fill: none; }
+.vp-svg .edge-dashed { stroke: var(--vp-dim); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.vp-svg .arrowhead { fill: var(--vp-dim); }
+.vp-svg .label { fill: var(--vp-muted); font-size: 11px; }
+.vp-svg .title { fill: var(--vp-strong); font-weight: 600; }
+
+/* ---------- Component fallbacks ----------
+   Base looks for the interactive components so they stay usable when Tailwind
+   cannot load (offline). Tailwind utilities in the template override these. */
+[data-vp-options] { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+[data-vp-option] { background: var(--vp-panel); border: 1px solid var(--vp-border); border-radius: 8px; padding: 20px; }
+[data-vp-checklist] { list-style: none; padding: 0; }
+[data-vp-item] { background: var(--vp-panel); border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+[data-vp-board] { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+[data-vp-column] { display: flex; flex-direction: column; gap: 12px; min-height: 200px; padding: 16px; background: var(--vp-panel); border: 1px solid var(--vp-border); border-radius: 8px; }
+[data-vp-dropzone] { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+[data-vp-card] { padding: 12px; background: var(--vp-bg); border: 1px solid var(--vp-raised); border-radius: 4px; }
+
+/* ---------- Option cards (data-vp-option + data-vp-select) ---------- */
+[data-vp-option] { transition: border-color .15s, box-shadow .15s; }
+[data-vp-option][data-vp-selected] { border-color: #22c55e !important; box-shadow: 0 0 0 1px #22c55e; }
+[data-vp-option][data-vp-selected] [data-vp-select] { background: #16a34a; }
+
+/* ---------- Checklist (data-vp-checklist / data-vp-item) ---------- */
+[data-vp-item]:has(input[type="checkbox"]:checked) [data-vp-item-text] { text-decoration: line-through; color: var(--vp-dim); }
+[data-vp-item] input[type="checkbox"] { accent-color: var(--vp-accent); width: 16px; height: 16px; cursor: pointer; }
+
+/* ---------- Board (data-vp-board / data-vp-column / data-vp-card) ---------- */
+[data-vp-card] { cursor: grab; user-select: none; }
+[data-vp-card]:active { cursor: grabbing; }
+[data-vp-card]:focus-visible { outline: 2px solid var(--vp-accent); outline-offset: 2px; }
+[data-vp-card].vp-dragging { opacity: .4; }
+[data-vp-column].vp-drop-target { box-shadow: inset 0 0 0 2px var(--vp-accent); }
+
+/* ---------- Toast & dialog ---------- */
+.vp-toast { position: fixed; left: 50%; bottom: 64px; z-index: 100; max-width: calc(100vw - 32px); box-sizing: border-box; padding: 10px 16px; border-radius: 6px; background: #111827; border: 1px solid var(--vp-border); color: #fff; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.4); opacity: 0; transform: translate(-50%, 8px); pointer-events: none; transition: opacity .2s, transform .2s; }
+.vp-toast[data-show] { opacity: 1; transform: translate(-50%, 0); }
+.vp-modal { width: min(560px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--vp-border); border-radius: 8px; background: var(--vp-panel); color: var(--vp-text); box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+.vp-modal::backdrop { background: rgba(0,0,0,.6); }
+.vp-modal form { display: flex; flex-direction: column; gap: 12px; padding: 20px; margin: 0; }
+.vp-modal h2 { margin: 0; font-size: 16px; color: var(--vp-strong); }
+.vp-modal p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--vp-muted); }
+.vp-modal textarea { box-sizing: border-box; width: 100%; min-height: 140px; resize: vertical; padding: 10px; border: 1px solid var(--vp-border); border-radius: 4px; background: var(--vp-bg); color: var(--vp-text); font: 13px/1.5 var(--vp-mono); }
+.vp-modal textarea:focus { outline: 2px solid var(--vp-accent); outline-offset: -1px; }
+.vp-modal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.vp-modal-hint { margin-right: auto; font-size: 11px; color: var(--vp-dim); }
+
+/* ---------- Small screens: sidebar becomes a horizontal tab strip ---------- */
+@media (max-width: 767px) {
+  .vp-body { flex-direction: column; }
+  .vp-sidebar { width: auto; flex-direction: row; overflow-x: auto; overflow-y: hidden; border-right: 0; border-bottom: 1px solid var(--vp-border); }
+  .vp-sidebar-label, .vp-meta, .vp-tabbar, .vp-status { display: none; }
+  .vp-nav { flex-direction: row; padding: 8px; }
+  .vp-nav-btn { width: auto; white-space: nowrap; }
+  .vp-canvas { padding: 16px; }
+  .vp-footer > :first-child:not(.vp-footer-actions) { display: none; }
+  .vp-footer-actions { flex: 1; }
+  .vp-footer-actions .vp-btn { flex: 1; }
+}
+
+/* ---------- Print / Save as PDF: show every section in order ---------- */
+@media print {
+  .vp-app { height: auto; overflow: visible; }
+  .vp-sidebar, .vp-tabbar, .vp-footer, .vp-toast { display: none !important; }
+  .vp-canvas { overflow: visible; }
+  [data-vp-tab][hidden] { display: block !important; }
+  [data-vp-tab] { break-after: page; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<!-- vp-runtime:head:end -->
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-
-    <!-- Top Header Bar -->
-    <header class="h-11 bg-[#3c3c3c] flex items-center justify-between px-4 text-sm text-gray-300 border-b border-[#2d2d2d]">
-        <div class="flex items-center space-x-2">
-            <span class="font-bold text-blue-400">💡 CONCEPT EXPLAINER</span>
-            <span class="text-gray-500">/</span>
-            <span id="project-title" class="text-xs">[Deep Architectural Walkthrough]</span>
-        </div>
-        <div class="text-xs text-green-400 flex items-center space-x-1">
-            <span class="h-2 w-2 rounded-full bg-green-500 inline-block"></span>
-            <span>Explanation Spec Active</span>
-        </div>
-    </header>
-
-    <!-- Main Workspace Layout -->
-    <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Sidebar Navigation -->
-        <aside class="w-64 ide-sidebar flex flex-col justify-between text-sm">
-            <div class="p-4 space-y-4">
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Concept Chapters</div>
-                <nav class="space-y-1" id="sidebar-menu">
-                    <button onclick="switchTab('core-concept', this)" class="w-full text-left block px-3 py-2 rounded bg-[#37373d] text-white sidebar-btn font-medium">💡 Core Concept</button>
-                    <button onclick="switchTab('visual-architecture', this)" class="w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium">📐 Visual Architecture</button>
-                    <button onclick="switchTab('annotated-code', this)" class="w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium">💻 Annotated Code Examples</button>
-                </nav>
-            </div>
-            <div class="p-4 border-t border-[#3c3c3c] text-xs text-gray-500 space-y-1">
-                <div>Engine: Explainer Planner</div>
-                <div>Status: Concept Synthesized</div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col overflow-hidden ide-content">
-            <div class="h-9 bg-[#252526] flex border-b border-[#3c3c3c] text-xs">
-                <button class="px-4 h-full flex items-center space-x-2 tab-active" id="active-tab-title">
-                    <span>core-concept.html</span>
-                </button>
-            </div>
-
-            <!-- Scrollable Content Window -->
-            <div class="flex-1 overflow-y-auto p-6 space-y-8" id="canvas-body">
-                
-                <!-- Section 1: Core Concept -->
-                <div id="core-concept" class="tab-content space-y-6">
-                    <section class="space-y-4">
-                        <h1 class="text-2xl font-bold text-white">💡 Core Concept Breakdown</h1>
-                        <p class="text-gray-400 text-sm max-w-3xl">An easy to follow, step-by-step introduction to the architectural patterns, logic flow, or technical problems being resolved.</p>
-                        
-                        <div class="border border-dashed border-[#3c3c3c] rounded-lg p-12 text-center text-gray-500 text-sm bg-[#1a1a1a]">
-                            [ Fill business goals, logic rules, mathematical formulations, or flow diagrams here ]
-                        </div>
-                    </section>
-                </div>
-
-                <!-- Section 2: Visual Architecture -->
-                <div id="visual-architecture" class="tab-content hidden space-y-6">
-                    <section class="space-y-4">
-                        <h1 class="text-2xl font-bold text-white">📐 Architectural Layout Diagrams</h1>
-                        <p class="text-gray-400 text-sm max-w-3xl">High fidelity SVG drawings showing layout options, data pathways, or component relationships side-by-side.</p>
-                        
-                        <!-- Side by side block demo -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 my-4">
-                            <div class="bg-[#252526] p-5 rounded-lg border border-[#3c3c3c] space-y-3">
-                                <h3 class="text-white font-semibold text-xs uppercase tracking-wider text-blue-400">[Pattern A: Synchronous Flow]</h3>
-                                <div class="border border-dashed border-[#3c3c3c] rounded p-12 text-center text-gray-500 text-xs bg-[#1a1a1a]">
-                                    [ Renders SVG synchronous diagram here ]
-                                </div>
-                            </div>
-                            <div class="bg-[#252526] p-5 rounded-lg border border-[#3c3c3c] space-y-3">
-                                <h3 class="text-white font-semibold text-xs uppercase tracking-wider text-purple-400">[Pattern B: Asynchronous Queue]</h3>
-                                <div class="border border-dashed border-[#3c3c3c] rounded p-12 text-center text-gray-500 text-xs bg-[#1a1a1a]">
-                                    [ Renders SVG asynchronous diagram here ]
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- Section 3: Annotated Code Examples -->
-                <div id="annotated-code" class="tab-content hidden space-y-6">
-                    <section class="space-y-4">
-                        <h1 class="text-2xl font-bold text-white">💻 Annotated Code & Implementations</h1>
-                        <p class="text-gray-400 text-sm max-w-3xl">Annotated code snippets demonstrating implementation details, schemas, or usage syntax.</p>
-                        
-                        <div class="bg-[#252526] p-5 rounded-lg border border-[#3c3c3c] space-y-4">
-                            <h3 class="text-white font-semibold text-xs uppercase tracking-wider border-b border-[#3c3c3c] pb-2">💻 Code Example</h3>
-                            <pre class="text-xs text-gray-400 font-mono bg-[#1e1e1e] p-4 rounded overflow-x-auto leading-relaxed">
-<span class="text-green-400">// [Insert code block here]</span>
-function demonstrateExample() {
-    const data = "concept";
-    console.log(`Explaining ${data}...`);
-}</pre>
-                        </div>
-                    </section>
-                </div>
-
-            </div>
-        </main>
+<body data-vp-approve-message="The explanation is clear and approved. Please proceed to the next milestone.">
+<!--
+  VISUAL PLANNER TEMPLATE · explainer
+  For AI agents filling this file:
+  • Copy it to the project root with a descriptive name (e.g. auth_token_flow_explainer.html).
+  • Update <title> and [data-vp-title], then replace every [bracketed placeholder].
+  • Tabs are generated from <section data-vp-tab="id" data-vp-label="…">.
+  • Diagrams: inline <svg class="vp-svg"> using node / node-accent / node-ok / node-warn /
+    edge / edge-dashed / label / title classes. Give each <marker> a unique id per page.
+  • Code: put the snippet in <pre> and reference its line numbers in the notes next to it.
+  • Keep both vp-runtime blocks and all data-vp-* attributes: they power the copy-to-chat buttons.
+-->
+<div class="vp-app">
+  <header class="vp-header">
+    <div class="vp-header-left">
+      <span class="vp-brand">💡 CONCEPT EXPLAINER</span>
+      <span class="vp-crumb">/</span>
+      <span class="vp-title" data-vp-title>[Concept Name]</span>
     </div>
+    <span class="vp-status">Ready to Read</span>
+  </header>
 
-    <!-- Human-in-the-Loop Loopback Utility Bar -->
-    <footer class="h-12 bg-[#007acc] text-white flex items-center justify-between px-4 text-sm font-medium shadow-lg z-50">
-        <div class="flex items-center space-x-2">
-            <span>💡 Have you reviewed the concept explanation?</span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="copyFeedback('APPROVED')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1 rounded text-xs transition font-semibold">
-                👍 Copy "Approved" Prompt
-            </button>
-            <button onclick="copyFeedback('REQUEST_CHANGES')" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-1 rounded text-xs transition font-semibold">
-                📝 Copy "Request Changes" JSON
-            </button>
-        </div>
-    </footer>
+  <div class="vp-body">
+    <aside class="vp-sidebar">
+      <div>
+        <div class="vp-sidebar-label">Chapters</div>
+        <nav class="vp-nav" data-vp-nav aria-label="Chapters"></nav>
+      </div>
+      <div class="vp-meta">
+        <div>Template: Explainer</div>
+        <div>Audience: [Who this is for]</div>
+      </div>
+    </aside>
 
-    <!-- Interactive JS -->
-    <script>
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
+    <main class="vp-main">
+      <div class="vp-tabbar"><span class="vp-tab" data-vp-active-label></span></div>
+      <div class="vp-canvas" data-vp-canvas>
 
-            document.querySelectorAll('.sidebar-btn').forEach(btn => {
-                btn.className = "w-full text-left block px-3 py-2 rounded text-gray-400 hover:bg-[#2d2d2d] hover:text-gray-200 sidebar-btn font-medium";
-            });
-            element.className = "w-full text-left block px-3 py-2 rounded bg-[#37373d] text-white sidebar-btn font-medium";
+        <!-- ============ 1. Core Concept ============ -->
+        <section data-vp-tab="core-concept" data-vp-label="💡 Core Concept" class="space-y-8 max-w-4xl">
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-white">💡 [Concept Name]</h1>
+            <p class="text-gray-400 text-sm max-w-3xl">[The problem this concept solves, in plain language.]</p>
+          </div>
 
-            document.getElementById('active-tab-title').querySelector('span').innerText = tabId + '.html';
-        }
+          <div class="border-l-4 border-blue-500 bg-ide-panel rounded-r-lg p-5">
+            <div class="text-xs font-bold uppercase tracking-wider text-blue-400">TL;DR</div>
+            <p class="text-sm text-gray-200 mt-2">[One sentence a reader can repeat to a colleague.]</p>
+          </div>
 
-        function copyFeedback(status) {
-            let payload = {};
-            if(status === 'APPROVED') {
-                payload = { status: "APPROVED", message: "Explanation reviewed and approved. Please proceed to the next milestone." };
-            } else {
-                payload = { status: "REQUEST_CHANGES", message: "Please modify the explanation based on the following: [Human: enter changes]" };
-            }
-            
-            const textToCopy = JSON.stringify(payload, null, 2);
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert(`Feedback prompt copied to clipboard! (${status})`);
-            }).catch(err => console.error('Failed to copy: ', err));
-        }
-    </script>
+          <ol class="space-y-4">
+            <li class="flex gap-4">
+              <span class="flex-none h-7 w-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+              <div><h3 class="text-white font-semibold text-sm">[First idea]</h3><p class="text-gray-400 text-sm mt-1">[Explain with a concrete example.]</p></div>
+            </li>
+            <li class="flex gap-4">
+              <span class="flex-none h-7 w-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+              <div><h3 class="text-white font-semibold text-sm">[Second idea]</h3><p class="text-gray-400 text-sm mt-1">[Build on step 1.]</p></div>
+            </li>
+            <li class="flex gap-4">
+              <span class="flex-none h-7 w-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+              <div><h3 class="text-white font-semibold text-sm">[How it fits together]</h3><p class="text-gray-400 text-sm mt-1">[Why this matters for our project.]</p></div>
+            </li>
+          </ol>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="bg-ide-panel border border-ide-border rounded-lg p-4">
+              <div class="text-xs font-bold uppercase text-green-400">✔️ Use it when</div>
+              <ul class="list-disc list-inside text-sm text-gray-300 mt-2 space-y-1"><li>[Situation]</li></ul>
+            </div>
+            <div class="bg-ide-panel border border-ide-border rounded-lg p-4">
+              <div class="text-xs font-bold uppercase text-red-400">⚠️ Common pitfalls</div>
+              <ul class="list-disc list-inside text-sm text-gray-300 mt-2 space-y-1"><li>[Mistake and how to avoid it]</li></ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 2. Visual Architecture ============ -->
+        <section data-vp-tab="visual-architecture" data-vp-label="📐 Visual Architecture" hidden class="space-y-6 max-w-6xl">
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-white">📐 Architecture, Side by Side</h1>
+            <p class="text-gray-400 text-sm max-w-3xl">[What the reader should notice when comparing the two diagrams.]</p>
+          </div>
+
+          <div class="grid gap-6 lg:grid-cols-2">
+            <figure class="bg-ide-panel border border-ide-border rounded-lg p-5 space-y-3">
+              <figcaption class="text-xs font-semibold uppercase tracking-wider text-blue-400">[Pattern A: Synchronous request]</figcaption>
+              <svg class="vp-svg" viewBox="0 0 420 180" role="img" aria-label="[Pattern A diagram]">
+                <defs>
+                  <marker id="arrow-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+                </defs>
+                <rect class="node-accent" x="10" y="60" width="100" height="50" rx="8"/><text x="60" y="90" text-anchor="middle" class="title">[Client]</text>
+                <rect class="node" x="160" y="60" width="100" height="50" rx="8"/><text x="210" y="90" text-anchor="middle" class="title">[API]</text>
+                <rect class="node" x="310" y="60" width="100" height="50" rx="8"/><text x="360" y="90" text-anchor="middle" class="title">[DB]</text>
+                <path class="edge" d="M110,78 H155" marker-end="url(#arrow-a)"/>
+                <path class="edge" d="M260,78 H305" marker-end="url(#arrow-a)"/>
+                <path class="edge-dashed" d="M305,95 H260" marker-end="url(#arrow-a)"/>
+                <path class="edge-dashed" d="M155,95 H110" marker-end="url(#arrow-a)"/>
+                <text x="210" y="145" text-anchor="middle" class="label">[client waits for the full round-trip]</text>
+              </svg>
+            </figure>
+
+            <figure class="bg-ide-panel border border-ide-border rounded-lg p-5 space-y-3">
+              <figcaption class="text-xs font-semibold uppercase tracking-wider text-purple-400">[Pattern B: Asynchronous queue]</figcaption>
+              <svg class="vp-svg" viewBox="0 0 420 180" role="img" aria-label="[Pattern B diagram]">
+                <defs>
+                  <marker id="arrow-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+                </defs>
+                <rect class="node-accent" x="10" y="60" width="90" height="50" rx="8"/><text x="55" y="90" text-anchor="middle" class="title">[Client]</text>
+                <rect class="node" x="135" y="60" width="80" height="50" rx="8"/><text x="175" y="90" text-anchor="middle" class="title">[API]</text>
+                <rect class="node-warn" x="250" y="60" width="70" height="50" rx="8"/><text x="285" y="90" text-anchor="middle" class="title">[Queue]</text>
+                <rect class="node-ok" x="340" y="60" width="75" height="50" rx="8"/><text x="377" y="90" text-anchor="middle" class="title">[Worker]</text>
+                <path class="edge" d="M100,85 H130" marker-end="url(#arrow-b)"/>
+                <path class="edge" d="M215,85 H245" marker-end="url(#arrow-b)"/>
+                <path class="edge" d="M320,85 H335" marker-end="url(#arrow-b)"/>
+                <path class="edge-dashed" d="M175,60 C175,25 55,25 55,55" marker-end="url(#arrow-b)"/>
+                <text x="115" y="30" text-anchor="middle" class="label">[202 Accepted]</text>
+                <text x="210" y="145" text-anchor="middle" class="label">[client returns immediately; work happens later]</text>
+              </svg>
+            </figure>
+          </div>
+
+          <div class="bg-ide-panel border border-ide-border rounded-lg vp-scroll-x">
+            <table class="vp-table">
+              <thead><tr><th>Aspect</th><th>[Pattern A]</th><th>[Pattern B]</th></tr></thead>
+              <tbody>
+                <tr><td>[Latency seen by user]</td><td>[Higher]</td><td>[Lower]</td></tr>
+                <tr><td>[Failure handling]</td><td>[Immediate error]</td><td>[Retries in background]</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ============ 3. Annotated Code ============ -->
+        <section data-vp-tab="annotated-code" data-vp-label="💻 Annotated Code" hidden class="space-y-6 max-w-6xl">
+          <div class="space-y-2">
+            <h1 class="text-2xl font-bold text-white">💻 Annotated Code</h1>
+            <p class="text-gray-400 text-sm max-w-3xl">[What this snippet shows and where it lives in the codebase, e.g. src/queue/worker.ts.]</p>
+          </div>
+
+          <div class="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <pre class="vp-code text-xs leading-6 text-gray-300 bg-ide-inset border border-ide-border rounded-lg p-4 overflow-x-auto"><span class="text-gray-600 select-none"> 1 </span><span class="text-gray-500">// [Insert code here; keep line numbers in sync with the notes]</span>
+<span class="text-gray-600 select-none"> 2 </span><span class="text-purple-400">async function</span> <span class="text-blue-300">handleJob</span>(job) {
+<span class="text-gray-600 select-none"> 3 </span>  <span class="text-purple-400">const</span> data = <span class="text-purple-400">await</span> load(job.id);
+<span class="text-gray-600 select-none"> 4 </span>  <span class="text-purple-400">if</span> (!data) <span class="text-purple-400">throw new</span> Error(<span class="text-amber-300">'not found'</span>);
+<span class="text-gray-600 select-none"> 5 </span>  <span class="text-purple-400">return</span> process(data);
+<span class="text-gray-600 select-none"> 6 </span>}</pre>
+
+            <ol class="space-y-3 text-sm">
+              <li class="bg-ide-panel border border-ide-border rounded-lg p-3"><span class="font-mono text-xs text-blue-400">L2</span> <span class="text-gray-300">[Why the function is async / what calls it.]</span></li>
+              <li class="bg-ide-panel border border-ide-border rounded-lg p-3"><span class="font-mono text-xs text-blue-400">L3–4</span> <span class="text-gray-300">[What happens when data is missing.]</span></li>
+              <li class="bg-ide-panel border border-ide-border rounded-lg p-3"><span class="font-mono text-xs text-blue-400">L5</span> <span class="text-gray-300">[Where the result goes next.]</span></li>
+            </ol>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <footer class="vp-footer">
+    <span>💡 Did this explanation make sense?</span>
+    <div class="vp-footer-actions">
+      <button type="button" class="vp-btn vp-btn-ok" data-vp-feedback="APPROVED">👍 Clear, approve</button>
+      <button type="button" class="vp-btn vp-btn-warn" data-vp-feedback="REQUEST_CHANGES">📝 Ask for changes…</button>
+    </div>
+  </footer>
+</div>
+<!-- vp-runtime:script:start · generated from scripts/runtime by `npm run sync:templates`. Keep this block; do not edit it by hand. -->
+<script>
+/* Visual Planner runtime: tabs, feedback loopback, checklists, priority boards.
+   Everything is driven by data-vp-* attributes, so filling a template never
+   requires touching this script. */
+(function () {
+  'use strict';
+  var doc = document;
+  var cfg = doc.body.dataset;
+
+  // ---------- helpers ----------
+  function text(el) { return el ? el.textContent.replace(/\s+/g, ' ').trim() : ''; }
+  function stripBrackets(s) { return s.replace(/^\[(.*)\]$/, '$1'); }
+  function documentTitle() { return text(doc.querySelector('[data-vp-title]')) || doc.title; }
+  function fileName() {
+    var last = location.pathname.split('/').pop();
+    try { return decodeURIComponent(last) || null; } catch (e) { return last || null; }
+  }
+  var store = {
+    key: function (k) { return 'vp:' + location.pathname + ':' + k; },
+    get: function (k) { try { return sessionStorage.getItem(this.key(k)); } catch (e) { return null; } },
+    set: function (k, v) { try { sessionStorage.setItem(this.key(k), v); } catch (e) { /* storage blocked */ } }
+  };
+
+  // ---------- tabs ----------
+  // Every <section data-vp-tab="id" data-vp-label="🗺️ Label"> becomes a sidebar entry.
+  // The active tab is kept in the URL hash and scroll position survives live reloads.
+  var app = doc.querySelector('.vp-app');
+  var canvas = doc.querySelector('[data-vp-canvas]');
+  var nav = doc.querySelector('[data-vp-nav]');
+  var activeLabel = doc.querySelector('[data-vp-active-label]');
+  var panels = Array.prototype.slice.call(doc.querySelectorAll('[data-vp-tab]'));
+  var navButtons = {};
+  var currentTab = null;
+
+  if (app && panels.length <= 1) app.setAttribute('data-vp-single', '');
+
+  panels.forEach(function (panel) {
+    var id = panel.getAttribute('data-vp-tab');
+    if (!nav) return;
+    var btn = doc.createElement('button');
+    btn.type = 'button';
+    btn.className = 'vp-nav-btn';
+    btn.textContent = panel.getAttribute('data-vp-label') || id;
+    btn.addEventListener('click', function () { activate(id, true); });
+    nav.appendChild(btn);
+    navButtons[id] = btn;
+  });
+
+  function saveScroll() {
+    if (currentTab && canvas) store.set('scroll:' + currentTab, String(canvas.scrollTop));
+  }
+
+  function activate(id, updateHash) {
+    var exists = panels.some(function (p) { return p.getAttribute('data-vp-tab') === id; });
+    if (!exists) id = panels.length ? panels[0].getAttribute('data-vp-tab') : null;
+    if (!id) return;
+    saveScroll();
+    panels.forEach(function (p) { p.hidden = p.getAttribute('data-vp-tab') !== id; });
+    Object.keys(navButtons).forEach(function (key) {
+      if (key === id) navButtons[key].setAttribute('aria-current', 'page');
+      else navButtons[key].removeAttribute('aria-current');
+    });
+    if (activeLabel) activeLabel.textContent = (navButtons[id] && navButtons[id].textContent) || id;
+    currentTab = id;
+    store.set('tab', id);
+    if (canvas) canvas.scrollTop = Number(store.get('scroll:' + id)) || 0;
+    if (updateHash && location.hash.slice(1) !== id) {
+      try { history.replaceState(null, '', '#' + id); } catch (e) { location.hash = id; }
+    }
+  }
+
+  function hashTab() {
+    try { return decodeURIComponent(location.hash.slice(1)); } catch (e) { return ''; }
+  }
+  window.addEventListener('hashchange', function () { activate(hashTab(), false); });
+  window.addEventListener('pagehide', saveScroll);
+  activate(hashTab() || store.get('tab'), false);
+
+  // ---------- toast ----------
+  var toastEl = null;
+  var toastTimer = null;
+  function toast(message) {
+    if (!toastEl) {
+      toastEl = doc.createElement('div');
+      toastEl.className = 'vp-toast';
+      toastEl.setAttribute('role', 'status');
+      doc.body.appendChild(toastEl);
+    }
+    toastEl.textContent = message;
+    toastEl.setAttribute('data-show', '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.removeAttribute('data-show'); }, 2600);
+  }
+
+  // ---------- dialog ----------
+  // Resolves to the textarea value when confirmed, or null when cancelled.
+  function dialog(opts) {
+    return new Promise(function (resolve) {
+      var dlg = doc.createElement('dialog');
+      dlg.className = 'vp-modal';
+      dlg.innerHTML =
+        '<form method="dialog">' +
+        '<h2></h2><p></p><textarea></textarea>' +
+        '<div class="vp-modal-actions"><span class="vp-modal-hint"></span>' +
+        '<button type="button" class="vp-btn vp-btn-ghost" data-cancel>Cancel</button>' +
+        '<button type="submit" class="vp-btn vp-btn-primary" value="ok"></button>' +
+        '</div></form>';
+      var form = dlg.querySelector('form');
+      var ta = dlg.querySelector('textarea');
+      var confirmBtn = dlg.querySelector('button[value="ok"]');
+      dlg.querySelector('h2').textContent = opts.title || '';
+      dlg.querySelector('p').textContent = opts.description || '';
+      dlg.querySelector('.vp-modal-hint').textContent = opts.readOnly ? '' : 'Ctrl/⌘ + Enter to confirm';
+      confirmBtn.textContent = opts.confirmLabel || 'Copy';
+      ta.value = opts.value || '';
+      ta.placeholder = opts.placeholder || '';
+      ta.readOnly = !!opts.readOnly;
+      ta.required = !!opts.required;
+      if (opts.readOnly) dlg.querySelector('[data-cancel]').remove();
+
+      dlg.querySelector('[data-cancel]') && dlg.querySelector('[data-cancel]').addEventListener('click', function () { dlg.close(''); });
+      ta.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form.requestSubmit(confirmBtn); }
+      });
+      dlg.addEventListener('close', function () {
+        var value = dlg.returnValue === 'ok' ? ta.value : null;
+        dlg.remove();
+        resolve(value);
+      });
+      doc.body.appendChild(dlg);
+      dlg.showModal();
+      ta.focus();
+      if (opts.readOnly) ta.select();
+    });
+  }
+
+  // ---------- clipboard ----------
+  function legacyCopy(value) {
+    var ta = doc.createElement('textarea');
+    ta.value = value;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    doc.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = doc.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+    return ok;
+  }
+
+  function writeClipboard(value) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(value).then(
+        function () { return true; },
+        function () { return legacyCopy(value); }
+      );
+    }
+    return Promise.resolve(legacyCopy(value));
+  }
+
+  // Adds document context, copies the JSON and tells the user what happened.
+  // If the browser blocks clipboard access, the JSON is shown for manual copy.
+  function sendPayload(payload, successMessage) {
+    var body = { status: payload.status };
+    if (payload.action) body.action = payload.action;
+    body.document = documentTitle();
+    body.file = fileName();
+    Object.keys(payload).forEach(function (k) {
+      if (k !== 'status' && k !== 'action' && payload[k] !== undefined && payload[k] !== '') body[k] = payload[k];
+    });
+    var json = JSON.stringify(body, null, 2);
+    return writeClipboard(json).then(function (ok) {
+      if (ok) { toast(successMessage || '📋 Copied! Paste it back into the AI chat.'); return; }
+      return dialog({
+        title: 'Copy this feedback',
+        description: 'This browser blocked clipboard access (common on plain http:// LAN addresses). Press Ctrl/⌘ + C, then paste into the AI chat.',
+        value: json,
+        readOnly: true,
+        confirmLabel: 'Done'
+      });
+    });
+  }
+
+  // ---------- feedback actions ----------
+  function sectionLabel() {
+    return currentTab && navButtons[currentTab] ? navButtons[currentTab].textContent : currentTab;
+  }
+
+  function approve() {
+    return sendPayload({
+      status: 'APPROVED',
+      message: cfg.vpApproveMessage || 'Reviewed and approved. Please proceed.'
+    }, '👍 Approval copied! Paste it back into the AI chat.');
+  }
+
+  function requestChanges() {
+    return dialog({
+      title: '📝 Request changes',
+      description: 'Describe what should change. It is copied as JSON for the AI chat.',
+      placeholder: 'e.g. Move the login step before checkout and add rate limiting to POST /orders',
+      required: true,
+      confirmLabel: 'Copy request'
+    }).then(function (changes) {
+      if (changes === null) return;
+      return sendPayload({
+        status: 'REQUEST_CHANGES',
+        viewing_section: sectionLabel(),
+        changes: changes.trim(),
+        message: cfg.vpChangesMessage || 'Please revise the document according to `changes`, then update the same HTML file.'
+      }, '📝 Change request copied! Paste it back into the AI chat.');
+    });
+  }
+
+  function selectOption(button) {
+    var name = button.getAttribute('data-vp-select');
+    return dialog({
+      title: '🎯 ' + name,
+      description: 'Optional: add direction for the implementation (constraints, tweaks, things to avoid).',
+      placeholder: 'Leave empty to choose as-is',
+      confirmLabel: 'Copy selection'
+    }).then(function (note) {
+      if (note === null) return;
+      var card = button.closest('[data-vp-option]');
+      if (card) {
+        var group = card.closest('[data-vp-options]') || doc;
+        Array.prototype.forEach.call(group.querySelectorAll('[data-vp-option]'), function (c) { c.removeAttribute('data-vp-selected'); });
+        card.setAttribute('data-vp-selected', '');
+      }
+      return sendPayload({
+        status: 'APPROVED_WITH_DIRECTION',
+        action: 'SELECT_OPTION',
+        selected_option: name,
+        direction: note.trim(),
+        message: 'I reviewed the options and chose "' + name + '". Please proceed with it' + (note.trim() ? ', following `direction`.' : '.')
+      }, '🎯 Selection copied! Paste it back into the AI chat.');
+    });
+  }
+
+  // ---------- checklist ----------
+  function findTarget(attrValue, selector) {
+    return (attrValue && doc.getElementById(attrValue)) || doc.querySelector(selector);
+  }
+
+  function checklistItems(list) {
+    return Array.prototype.map.call(list.querySelectorAll('[data-vp-item]'), function (item, i) {
+      var box = item.querySelector('input[type="checkbox"]');
+      var entry = {
+        id: item.getAttribute('data-id') || (box && box.id) || 'item-' + (i + 1),
+        task: stripBrackets(text(item.querySelector('[data-vp-item-text]')) || text(item)),
+        completed: !!(box && box.checked)
+      };
+      var assignee = text(item.querySelector('[data-vp-assignee]'));
+      var due = text(item.querySelector('[data-vp-due]'));
+      if (assignee) entry.assignee = stripBrackets(assignee);
+      if (due) entry.due = stripBrackets(due);
+      return entry;
+    });
+  }
+
+  function updateProgress() {
+    Array.prototype.forEach.call(doc.querySelectorAll('[data-vp-checklist]'), function (list) {
+      var items = checklistItems(list);
+      var done = items.filter(function (i) { return i.completed; }).length;
+      Array.prototype.forEach.call(doc.querySelectorAll('[data-vp-progress="' + list.id + '"], [data-vp-progress=""]'), function (el) {
+        el.textContent = done + ' / ' + items.length + ' done';
+      });
+    });
+  }
+
+  function copyChecklist(button) {
+    var list = findTarget(button.getAttribute('data-vp-copy-checklist'), '[data-vp-checklist]');
+    if (!list) return;
+    return sendPayload({
+      status: 'UPDATED',
+      action: list.getAttribute('data-vp-action') || 'UPDATE_CHECKLIST',
+      items: checklistItems(list),
+      message: cfg.vpChecklistMessage || 'Here are the updated statuses of the action items. Please sync them to tasks.md.'
+    }, '📋 Checklist copied! Paste it back into the AI chat.');
+  }
+
+  // ---------- priority board ----------
+  function columns(board) { return Array.prototype.slice.call(board.querySelectorAll('[data-vp-column]')); }
+  function dropZone(column) { return column.querySelector('[data-vp-dropzone]') || column; }
+  function cardsIn(zone) { return Array.prototype.slice.call(zone.querySelectorAll('[data-vp-card]')); }
+
+  function updateCounts() {
+    Array.prototype.forEach.call(doc.querySelectorAll('[data-vp-column]'), function (col) {
+      var count = col.querySelector('[data-vp-count]');
+      if (count) count.textContent = String(cardsIn(dropZone(col)).length);
+    });
+  }
+
+  function copyBoard(button) {
+    var board = findTarget(button.getAttribute('data-vp-copy-board'), '[data-vp-board]');
+    if (!board) return;
+    var result = {};
+    columns(board).forEach(function (col) {
+      result[col.getAttribute('data-vp-column')] = cardsIn(dropZone(col)).map(function (card, i) {
+        return {
+          id: card.getAttribute('data-id') || 'card-' + (i + 1),
+          task: stripBrackets(text(card.querySelector('[data-vp-card-text]')) || text(card))
+        };
+      });
+    });
+    return sendPayload({
+      status: 'UPDATED',
+      action: board.getAttribute('data-vp-action') || 'UPDATE_TASK_PRIORITY',
+      priorities: result,
+      message: cfg.vpBoardMessage || 'Here is the new priority order (top = most important). Please update tasks.md accordingly.'
+    }, '📋 Priorities copied! Paste it back into the AI chat.');
+  }
+
+  Array.prototype.forEach.call(doc.querySelectorAll('[data-vp-card]'), function (card) {
+    card.setAttribute('draggable', 'true');
+    if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-roledescription', 'draggable card');
+  });
+
+  var dragged = null;
+  function clearDropTargets() {
+    Array.prototype.forEach.call(doc.querySelectorAll('.vp-drop-target'), function (el) { el.classList.remove('vp-drop-target'); });
+  }
+  doc.addEventListener('dragstart', function (e) {
+    var card = e.target.closest && e.target.closest('[data-vp-card]');
+    if (!card) return;
+    dragged = card;
+    card.classList.add('vp-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', card.getAttribute('data-id') || '');
+  });
+  doc.addEventListener('dragend', function () {
+    if (dragged) dragged.classList.remove('vp-dragging');
+    dragged = null;
+    clearDropTargets();
+    updateCounts();
+  });
+  doc.addEventListener('dragover', function (e) {
+    if (!dragged) return;
+    var column = e.target.closest && e.target.closest('[data-vp-column]');
+    if (!column || column.closest('[data-vp-board]') !== dragged.closest('[data-vp-board]')) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (!column.classList.contains('vp-drop-target')) { clearDropTargets(); column.classList.add('vp-drop-target'); }
+    var zone = dropZone(column);
+    var before = cardsIn(zone).filter(function (c) { return c !== dragged; }).find(function (c) {
+      var r = c.getBoundingClientRect();
+      return e.clientY < r.top + r.height / 2;
+    });
+    if (before) { if (dragged.nextElementSibling !== before) zone.insertBefore(dragged, before); }
+    else if (zone.lastElementChild !== dragged) zone.appendChild(dragged);
+  });
+  doc.addEventListener('drop', function (e) { if (dragged) e.preventDefault(); });
+
+  // Keyboard: focus a card, ↑/↓ to reorder, ←/→ to move between columns.
+  doc.addEventListener('keydown', function (e) {
+    var card = e.target.closest && e.target.closest('[data-vp-card]');
+    if (!card || e.altKey || e.ctrlKey || e.metaKey) return;
+    var board = card.closest('[data-vp-board]');
+    var cols = columns(board);
+    var col = card.closest('[data-vp-column]');
+    var zone = dropZone(col);
+    var siblings = cardsIn(zone);
+    var idx = siblings.indexOf(card);
+    var moved = true;
+    if (e.key === 'ArrowUp' && idx > 0) zone.insertBefore(card, siblings[idx - 1]);
+    else if (e.key === 'ArrowDown' && idx < siblings.length - 1) zone.insertBefore(siblings[idx + 1], card);
+    else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && cols.length > 1) {
+      var next = cols[cols.indexOf(col) + (e.key === 'ArrowLeft' ? -1 : 1)];
+      if (next) dropZone(next).appendChild(card); else moved = false;
+    } else moved = false;
+    if (moved) { e.preventDefault(); card.focus(); updateCounts(); }
+  });
+
+  // ---------- event wiring ----------
+  doc.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('[data-vp-feedback], [data-vp-select], [data-vp-copy-checklist], [data-vp-copy-board]');
+    if (!t) return;
+    if (t.hasAttribute('data-vp-feedback')) {
+      if (t.getAttribute('data-vp-feedback') === 'APPROVED') approve(); else requestChanges();
+    } else if (t.hasAttribute('data-vp-select')) selectOption(t);
+    else if (t.hasAttribute('data-vp-copy-checklist')) copyChecklist(t);
+    else copyBoard(t);
+  });
+  doc.addEventListener('change', function (e) {
+    if (e.target.closest && e.target.closest('[data-vp-checklist]')) updateProgress();
+  });
+  updateProgress();
+  updateCounts();
+
+  // Public API for custom buttons: VP.send({ status: 'UPDATED', action: '...', ... })
+  window.VP = { send: sendPayload, toast: toast, dialog: dialog, showTab: function (id) { activate(id, true); } };
+  // Back-compat with specs written against the v1.1 templates.
+  window.copyFeedback = function (status) { return status === 'APPROVED' ? approve() : requestChanges(); };
+})();
+</script>
+<!-- vp-runtime:script:end -->
 </body>
 </html>

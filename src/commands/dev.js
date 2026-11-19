@@ -96,13 +96,13 @@ function createRequestHandler(serveDir, defaultFile) {
   };
 }
 
-function listenOnFreePort(server, startPort, host, maxAttempts) {
+function listenOnFreePort(server, startPort, host, maxAttempts, log) {
   return new Promise((resolve, reject) => {
     let port = startPort;
     let attempts = 0;
     const onError = (err) => {
       if (err.code === 'EADDRINUSE' && port !== 0 && ++attempts < maxAttempts) {
-        console.log(`⚠️  Port ${port} is in use, trying ${port + 1}...`);
+        log(`⚠️  Port ${port} is in use, trying ${port + 1}...`);
         port += 1;
         server.listen(port, host);
       } else {
@@ -126,7 +126,7 @@ function listenOnFreePort(server, startPort, host, maxAttempts) {
  *
  * Resolves to { url, port, close() } once the server is listening.
  */
-export async function startDevServer(htmlFilePath, { port = 3000, host = '127.0.0.1', maxPortAttempts = 20, watch = true } = {}) {
+export async function startDevServer(htmlFilePath, { port = 3000, host = '127.0.0.1', maxPortAttempts = 20, watch = true, log = console.log } = {}) {
   const stat = await fs.stat(htmlFilePath).catch(() => null);
   if (!stat || !stat.isFile()) {
     throw new Error(`File not found: ${htmlFilePath}`);
@@ -144,7 +144,7 @@ export async function startDevServer(htmlFilePath, { port = 3000, host = '127.0.
     wss.handleUpgrade(req, socket, head, (ws) => wss.emit('connection', ws, req));
   });
 
-  const actualPort = await listenOnFreePort(server, port, host, maxPortAttempts);
+  const actualPort = await listenOnFreePort(server, port, host, maxPortAttempts, log);
   const url = `http://localhost:${actualPort}/${encodeURIComponent(targetFilename)}`;
 
   let watcher = null;
@@ -161,7 +161,7 @@ export async function startDevServer(htmlFilePath, { port = 3000, host = '127.0.
       if (event === 'addDir' || event === 'unlinkDir') return;
       clearTimeout(timer);
       timer = setTimeout(() => {
-        console.log(`⚡ ${path.basename(changed)} changed. Reloading ${wss.clients.size} client(s)...`);
+        log(`⚡ ${path.basename(changed)} changed. Reloading ${wss.clients.size} client(s)...`);
         for (const client of wss.clients) {
           if (client.readyState === client.OPEN) client.send('reload');
         }
