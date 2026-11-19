@@ -1,0 +1,150 @@
+/* Visual Planner runtime styles: app shell + interactive components.
+   Plain CSS so the page stays usable even when the Tailwind CDN is offline. */
+:root {
+  --vp-bg: #1e1e1e;
+  --vp-panel: #252526;
+  --vp-raised: #2d2d2d;
+  --vp-hover: #37373d;
+  --vp-border: #3c3c3c;
+  --vp-inset: #1a1a1a;
+  --vp-text: #d4d4d4;
+  --vp-strong: #ffffff;
+  --vp-muted: #9ca3af;
+  --vp-dim: #6b7280;
+  --vp-accent: #007acc;
+  --vp-ok: #059669;
+  --vp-warn: #d97706;
+  --vp-font: 'Segoe UI', system-ui, -apple-system, Tahoma, Geneva, Verdana, sans-serif;
+  --vp-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; margin: 0; }
+body { background: var(--vp-bg); color: var(--vp-text); font-family: var(--vp-font); }
+
+/* ---------- App shell ---------- */
+.vp-app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+.vp-header { flex: none; height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; background: #3c3c3c; border-bottom: 1px solid var(--vp-raised); font-size: 14px; color: #d1d5db; }
+.vp-header-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.vp-brand { font-weight: 700; color: #60a5fa; white-space: nowrap; }
+.vp-crumb { color: var(--vp-dim); }
+.vp-title { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vp-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #4ade80; white-space: nowrap; }
+.vp-status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+.vp-body { flex: 1; display: flex; min-height: 0; }
+.vp-sidebar { width: 256px; flex: none; display: flex; flex-direction: column; justify-content: space-between; background: var(--vp-panel); border-right: 1px solid var(--vp-border); font-size: 14px; overflow-y: auto; }
+.vp-sidebar-label { padding: 16px 16px 8px; font-size: 12px; font-weight: 600; color: var(--vp-dim); text-transform: uppercase; letter-spacing: .05em; }
+.vp-nav { display: flex; flex-direction: column; gap: 4px; padding: 0 16px 16px; }
+.vp-nav-btn { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 8px 12px; border-radius: 4px; color: var(--vp-muted); font-weight: 500; cursor: pointer; }
+.vp-nav-btn:hover { background: var(--vp-raised); color: #e5e7eb; }
+.vp-nav-btn[aria-current="page"] { background: var(--vp-hover); color: var(--vp-strong); }
+.vp-nav-btn:focus-visible { outline: 2px solid var(--vp-accent); outline-offset: -2px; }
+.vp-meta { padding: 16px; border-top: 1px solid var(--vp-border); font-size: 12px; color: var(--vp-dim); line-height: 1.7; }
+
+.vp-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.vp-tabbar { flex: none; height: 36px; display: flex; background: var(--vp-panel); border-bottom: 1px solid var(--vp-border); font-size: 12px; }
+.vp-tab { display: flex; align-items: center; padding: 0 16px; background: var(--vp-bg); border-top: 2px solid var(--vp-accent); color: var(--vp-strong); }
+.vp-canvas { flex: 1; overflow-y: auto; padding: 24px; }
+[data-vp-tab][hidden] { display: none !important; }
+
+.vp-footer { flex: none; min-height: 48px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 6px 16px; background: var(--vp-accent); color: #fff; font-size: 14px; font-weight: 500; }
+.vp-footer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Only one section: the sidebar would be a single button, so drop it. */
+.vp-app[data-vp-single] .vp-sidebar { display: none; }
+
+/* ---------- Buttons ---------- */
+.vp-btn { all: unset; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; color: #fff; background: #3a3a3c; cursor: pointer; transition: background .15s; text-align: center; }
+.vp-btn:hover { background: #4a4a4c; }
+.vp-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.vp-btn-ok { background: var(--vp-ok); } .vp-btn-ok:hover { background: #10b981; }
+.vp-btn-warn { background: var(--vp-warn); } .vp-btn-warn:hover { background: #f59e0b; }
+.vp-btn-primary { background: #2563eb; } .vp-btn-primary:hover { background: #3b82f6; }
+.vp-btn-ghost { background: transparent; box-shadow: inset 0 0 0 1px var(--vp-border); color: var(--vp-text); }
+.vp-btn-ghost:hover { background: var(--vp-raised); }
+.vp-btn-block { display: flex; width: 100%; padding: 8px 14px; }
+
+/* ---------- Content primitives ---------- */
+.vp-placeholder { border: 1px dashed var(--vp-border); border-radius: 8px; padding: 40px 24px; text-align: center; color: var(--vp-dim); font-size: 14px; background: var(--vp-inset); }
+.vp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vp-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--vp-dim); padding: 8px 12px; border-bottom: 1px solid var(--vp-border); }
+.vp-table td { padding: 10px 12px; border-bottom: 1px solid var(--vp-raised); vertical-align: top; }
+.vp-table code, .vp-code { font-family: var(--vp-mono); }
+.vp-scroll-x { overflow-x: auto; }
+
+/* SVG diagrams: add class="vp-svg" to the <svg> and use these classes on shapes. */
+.vp-svg { width: 100%; height: auto; display: block; font-family: var(--vp-font); }
+.vp-svg text { fill: var(--vp-text); font-size: 13px; }
+.vp-svg .node { fill: var(--vp-panel); stroke: var(--vp-border); stroke-width: 1.5; }
+.vp-svg .node-accent { fill: #0b2a40; stroke: var(--vp-accent); stroke-width: 1.5; }
+.vp-svg .node-ok { fill: #0b2e22; stroke: var(--vp-ok); stroke-width: 1.5; }
+.vp-svg .node-warn { fill: #33240a; stroke: var(--vp-warn); stroke-width: 1.5; }
+.vp-svg .edge { stroke: var(--vp-dim); stroke-width: 1.5; fill: none; }
+.vp-svg .edge-dashed { stroke: var(--vp-dim); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.vp-svg .arrowhead { fill: var(--vp-dim); }
+.vp-svg .label { fill: var(--vp-muted); font-size: 11px; }
+.vp-svg .title { fill: var(--vp-strong); font-weight: 600; }
+
+/* ---------- Component fallbacks ----------
+   Base looks for the interactive components so they stay usable when Tailwind
+   cannot load (offline). Tailwind utilities in the template override these. */
+[data-vp-options] { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+[data-vp-option] { background: var(--vp-panel); border: 1px solid var(--vp-border); border-radius: 8px; padding: 20px; }
+[data-vp-checklist] { list-style: none; padding: 0; }
+[data-vp-item] { background: var(--vp-panel); border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+[data-vp-board] { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+[data-vp-column] { display: flex; flex-direction: column; gap: 12px; min-height: 200px; padding: 16px; background: var(--vp-panel); border: 1px solid var(--vp-border); border-radius: 8px; }
+[data-vp-dropzone] { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+[data-vp-card] { padding: 12px; background: var(--vp-bg); border: 1px solid var(--vp-raised); border-radius: 4px; }
+
+/* ---------- Option cards (data-vp-option + data-vp-select) ---------- */
+[data-vp-option] { transition: border-color .15s, box-shadow .15s; }
+[data-vp-option][data-vp-selected] { border-color: #22c55e !important; box-shadow: 0 0 0 1px #22c55e; }
+[data-vp-option][data-vp-selected] [data-vp-select] { background: #16a34a; }
+
+/* ---------- Checklist (data-vp-checklist / data-vp-item) ---------- */
+[data-vp-item]:has(input[type="checkbox"]:checked) [data-vp-item-text] { text-decoration: line-through; color: var(--vp-dim); }
+[data-vp-item] input[type="checkbox"] { accent-color: var(--vp-accent); width: 16px; height: 16px; cursor: pointer; }
+
+/* ---------- Board (data-vp-board / data-vp-column / data-vp-card) ---------- */
+[data-vp-card] { cursor: grab; user-select: none; }
+[data-vp-card]:active { cursor: grabbing; }
+[data-vp-card]:focus-visible { outline: 2px solid var(--vp-accent); outline-offset: 2px; }
+[data-vp-card].vp-dragging { opacity: .4; }
+[data-vp-column].vp-drop-target { box-shadow: inset 0 0 0 2px var(--vp-accent); }
+
+/* ---------- Toast & dialog ---------- */
+.vp-toast { position: fixed; left: 50%; bottom: 64px; z-index: 100; max-width: calc(100vw - 32px); box-sizing: border-box; padding: 10px 16px; border-radius: 6px; background: #111827; border: 1px solid var(--vp-border); color: #fff; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.4); opacity: 0; transform: translate(-50%, 8px); pointer-events: none; transition: opacity .2s, transform .2s; }
+.vp-toast[data-show] { opacity: 1; transform: translate(-50%, 0); }
+.vp-modal { width: min(560px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--vp-border); border-radius: 8px; background: var(--vp-panel); color: var(--vp-text); box-shadow: 0 16px 48px rgba(0,0,0,.5); }
+.vp-modal::backdrop { background: rgba(0,0,0,.6); }
+.vp-modal form { display: flex; flex-direction: column; gap: 12px; padding: 20px; margin: 0; }
+.vp-modal h2 { margin: 0; font-size: 16px; color: var(--vp-strong); }
+.vp-modal p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--vp-muted); }
+.vp-modal textarea { box-sizing: border-box; width: 100%; min-height: 140px; resize: vertical; padding: 10px; border: 1px solid var(--vp-border); border-radius: 4px; background: var(--vp-bg); color: var(--vp-text); font: 13px/1.5 var(--vp-mono); }
+.vp-modal textarea:focus { outline: 2px solid var(--vp-accent); outline-offset: -1px; }
+.vp-modal-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.vp-modal-hint { margin-right: auto; font-size: 11px; color: var(--vp-dim); }
+
+/* ---------- Small screens: sidebar becomes a horizontal tab strip ---------- */
+@media (max-width: 767px) {
+  .vp-body { flex-direction: column; }
+  .vp-sidebar { width: auto; flex-direction: row; overflow-x: auto; overflow-y: hidden; border-right: 0; border-bottom: 1px solid var(--vp-border); }
+  .vp-sidebar-label, .vp-meta, .vp-tabbar, .vp-status { display: none; }
+  .vp-nav { flex-direction: row; padding: 8px; }
+  .vp-nav-btn { width: auto; white-space: nowrap; }
+  .vp-canvas { padding: 16px; }
+  .vp-footer > :first-child:not(.vp-footer-actions) { display: none; }
+  .vp-footer-actions { flex: 1; }
+  .vp-footer-actions .vp-btn { flex: 1; }
+}
+
+/* ---------- Print / Save as PDF: show every section in order ---------- */
+@media print {
+  .vp-app { height: auto; overflow: visible; }
+  .vp-sidebar, .vp-tabbar, .vp-footer, .vp-toast { display: none !important; }
+  .vp-canvas { overflow: visible; }
+  [data-vp-tab][hidden] { display: block !important; }
+  [data-vp-tab] { break-after: page; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

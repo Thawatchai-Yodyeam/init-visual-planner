@@ -8,54 +8,84 @@ This tool helps AI Agents and developers transition from long text-based system 
 
 ## 🚀 Quick Start
 
-You don't need to install this package globally. You can run it directly using `npx`:
+You don't need to install this package globally. Run it directly with `npx` (Node.js 18.3+).
 
 ### 1. Initialize the Workspace
-Run the following command in the root of your target project directory:
+Run in the root of your target project:
 ```bash
 npx init-visual-planner
 ```
-This will automatically generate the following file structure in your directory:
-*   `.visual-planner/template.html` (The interactive canvas template)
-*   `agents.md` (Strict directives for AI agents working in this repository)
-*   `context.md` (Business goals, stack decisions, and design constraints)
-*   `tasks.md` (Project task tracker checklist)
+This generates:
+
+| Path | Purpose |
+| --- | --- |
+| `.visual-planner/spec_template.html` | Full spec: overview, wireframes, SVG flows, API specs |
+| `.visual-planner/meeting_template.html` | Meeting minutes, timeline, checkable action items |
+| `.visual-planner/comparison_template.html` | A/B/C/D option comparison with selection buttons |
+| `.visual-planner/priority_template.html` | Drag-and-drop High/Medium/Low priority board |
+| `.visual-planner/explainer_template.html` | Architecture walkthroughs with SVG + annotated code |
+| `agents.md` | Directives for AI agents working in this repository |
+| `context.md` | Business goals, stack decisions, design constraints |
+| `tasks.md` | Project task tracker checklist |
+
+Existing files are never overwritten. Pass `--force` to reset them to the bundled templates, or a directory to initialize somewhere other than the current folder (`npx init-visual-planner ./my-app`).
 
 ### 2. Run the Development Server
-When you or your AI Agent creates/updates a visual HTML specification file, launch the local dev server to preview and copy feedback:
 ```bash
 npx init-visual-planner dev <path-to-html-file>
 ```
-*   **Live Reload:** Automatically watches the HTML file and reloads the browser when changes are saved.
-*   **Port Auto-Collision Handling:** Automatically searches for an open port if port `3000` is already in use.
-*   **Automatic Browser Open:** Opens the file in your default browser instantly.
+* **Live Reload:** Watches the HTML file's folder and reloads the browser on save.
+* **Port Handling:** Starts on `--port` / `$PORT` / `3000` and moves to the next free port if it's busy.
+* **Idempotent:** If a server is already running for this project, `dev` prints its URL instead of starting another.
+* **Browser Open:** Opens the page in your default browser (skip with `--no-open`).
+* **Local Only:** Binds to `127.0.0.1` by default; use `--host 0.0.0.0` to expose it (e.g. inside a container).
 
-### 3. Stop the Development Server
-When you are finished reviewing or the design has been approved, shut down the running server process cleanly:
+### 3. Check or Stop the Server
+```bash
+npx init-visual-planner status
+```
 ```bash
 npx init-visual-planner stop
 ```
-*   **Safe Shutdown:** Reads the cached PID and terminates only the specific dev server process, preventing port conflicts and keeping other running Node.js apps safe.
+The server records its PID and URL in `.visual-planner/server.json` (in the folder you ran `dev` from). `stop` signals only that PID, so other Node.js processes are never affected, and the file is cleaned up automatically when the server exits.
 
 ---
 
 ## 🎨 Interactive Visual Canvas Features
-*   **Sidebar Navigation:** Easily switch between tabs like *System Overview*, *UI/UX Wireframes*, *Workflows*, and *API Specs*.
-*   **Interactive Decision Trade-offs:** Click buttons in comparison sections to copy choice JSON prompts directly to the clipboard.
-*   **Human-in-the-Loop Feedback:** Click bottom bar utility buttons to copy `APPROVED` or `REQUEST_CHANGES` feedback payloads instantly.
+* **Self-contained pages:** Each template is a single HTML file. The app shell, tabs and feedback buttons are plain CSS/JS, so they keep working offline. Tailwind (from its CDN) is only used to style the content.
+* **Auto-generated navigation:** Each `<section data-vp-tab>` becomes a sidebar tab. The active tab is kept in the URL hash, and both tab and scroll position survive live reloads.
+* **Human-in-the-Loop Feedback:** *Approve* copies an `APPROVED` payload. *Request changes* opens a text box, so your actual change request ends up in the JSON. Every payload names the document and file it came from.
+* **Decision cards:** Choosing an option copies an `APPROVED_WITH_DIRECTION` payload, with optional direction you can type in.
+* **Checklists & priority boards:** Meeting action items track progress, and the priority board supports drag-and-drop plus keyboard (↑ ↓ ← →). Both copy structured JSON for syncing `tasks.md`.
+* **Works anywhere:** The sidebar collapses to a tab strip on phones, and *Print / Save as PDF* outputs every section. If the clipboard is blocked (e.g. plain `http://` on a LAN IP), the JSON is shown for manual copy.
 
 ---
 
-## 🛠️ Installation & Customization (For Developers)
-
-If you wish to install it locally in your project:
-```bash
-npm install init-visual-planner --save-dev
+## 📁 Project Structure
+```
+bin/cli.js              CLI entry point (argument parsing, help, signal handling)
+src/commands/init.js    Scaffolds templates into a project
+src/commands/dev.js     Static server + live reload
+src/commands/stop.js    Stops the recorded dev server
+src/lib/                Shared helpers (paths, server state file)
+src/index.js            Programmatic API
+templates/canvas/       HTML canvases → copied to .visual-planner/
+templates/docs/         Markdown docs → copied to the project root
+scripts/runtime/        Shared canvas CSS/JS, inlined into every template
+scripts/sync-templates.js  Re-inlines the runtime (`npm run sync:templates`)
+test/                   node:test suites (`npm test`)
 ```
 
-And run via:
+New templates dropped into `templates/canvas/` or `templates/docs/` are picked up by `init` automatically.
+
+To change canvas behaviour or styling, edit `scripts/runtime/runtime.{css,js}` and run `npm run sync:templates`. A test fails if any template is out of sync. The browser tests (`test/templates.browser.test.js`) run when Playwright is installed and are skipped otherwise.
+
+## 🛠️ Development
 ```bash
-npx init-visual-planner
+npm install
+```
+```bash
+npm test
 ```
 
 ---
